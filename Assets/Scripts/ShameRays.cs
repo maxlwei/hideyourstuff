@@ -12,6 +12,8 @@ public class ShameRays : MonoBehaviour
     private SphereCollider col;                     // Reference to the sphere collider trigger component.
     private Animator anim;                          // Reference to the Animator.
     private GameObject shame;                       // Reference to the player.
+    private Mesh shameMesh;
+    private Vector3[] shameVertices;
 
 
     void Awake()
@@ -21,6 +23,8 @@ public class ShameRays : MonoBehaviour
         col = GetComponent<SphereCollider>();
         anim = GetComponent<Animator>();
         shame = GameObject.FindGameObjectWithTag("Shames");
+        shameMesh = shame.GetComponent<MeshFilter>().mesh;
+        shameVertices = shameMesh.vertices;
     }
 
 
@@ -55,10 +59,14 @@ public class ShameRays : MonoBehaviour
                 RaycastHit hit;
 
                 Debug.Log("Within angle");
+                // get random vertice on mesh
+                Vector3 target = shame.transform.TransformPoint(shameVertices[Random.Range(0, shameVertices.Length - 1)]);
+                //Vector3 target = shameVertices[Random.Range(0, shameVertices.Length - 1)];
+
 
                 // ... and if a raycast towards the player hits something...
-                bool isHit = Physics.Raycast(transform.position, (shame.transform.position + (Random.insideUnitSphere * size) - this.transform.position), out hit, 40f);
-                Debug.DrawRay(this.transform.position, (shame.transform.position + (Random.insideUnitSphere * size) - this.transform.position));
+                bool isHit = Physics.Raycast(transform.position, (target - this.transform.position), out hit, 40f);
+                Debug.DrawRay(this.transform.position, (target - this.transform.position));
 
                 if (isHit)
                 {
