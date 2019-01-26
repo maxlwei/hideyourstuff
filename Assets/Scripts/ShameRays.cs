@@ -7,7 +7,7 @@ public class ShameRays : MonoBehaviour
     public float fieldOfViewAngle = 80f;           // Number of degrees, centred on forward, for the enemy see.
     public bool objectInSight;                      // Whether or not an object is currently sighted.
 
-
+    private float size = 0.3f;
     private UnityEngine.AI.NavMeshAgent nav;        // Reference to the NavMeshAgent component.
     private SphereCollider col;                     // Reference to the sphere collider trigger component.
     private Animator anim;                          // Reference to the Animator.
@@ -50,17 +50,17 @@ public class ShameRays : MonoBehaviour
             //Debug.Log("Triggered but not found");
 
             // If the angle between forward and where the player is, is less than half the angle of view...
-            if (angle < fieldOfViewAngle)
+            if (angle < fieldOfViewAngle / 2f)
             {
                 RaycastHit hit;
 
                 Debug.Log("Within angle");
 
                 // ... and if a raycast towards the player hits something...
-                bool isHit = Physics.Raycast(transform.position, (shame.transform.position - this.transform.position), out hit);
-                Debug.DrawRay(this.transform.position, (shame.transform.position - this.transform.position));
+                bool isHit = Physics.Raycast(transform.position, (shame.transform.position + (Random.insideUnitSphere * size) - this.transform.position), out hit, 40f);
+                Debug.DrawRay(this.transform.position, (shame.transform.position + (Random.insideUnitSphere * size) - this.transform.position));
 
-                if (Physics.Raycast(transform.position, (shame.transform.position - this.transform.position), out hit))
+                if (isHit)
                 {
                     Debug.Log("Ray shooty tooty");
                     // ... and if the raycast hits the player...
