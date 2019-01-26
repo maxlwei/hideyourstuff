@@ -52,7 +52,7 @@ public class ShameRays : MonoBehaviour
                 {
                     RaycastHit hit;
 
-                    Debug.Log("Within angle");
+                    //Debug.Log("Within angle");
 
                     // ... and if a raycast towards the player hits something...
                     bool isHit = Physics.Raycast(transform.position, (shameinst.transform.position + (Random.insideUnitSphere * size) - this.transform.position), out hit, 40f);
@@ -60,11 +60,11 @@ public class ShameRays : MonoBehaviour
 
                     if (isHit)
                     {
-                        Debug.Log("Ray shooty tooty");
+                        //Debug.Log("Ray shooty tooty");
                         // ... and if the raycast hits the player...
                         if (hit.collider.gameObject == shameinst)
                         {
-                            Debug.Log("Ray hitting");
+                            //Debug.Log("Ray hitting");
                             // ... the player is in sight.
                             objectInSight = true;
                             // TODO: Create detection shader
