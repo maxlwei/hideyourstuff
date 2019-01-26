@@ -4,20 +4,14 @@ using UnityEngine;
 
 public class ShameRays : MonoBehaviour
 {
-    public float fieldOfViewAngle = 110f;           // Number of degrees, centred on forward, for the enemy see.
-    public bool playerInSight;                      // Whether or not the player is currently sighted.
-    public Vector3 personalLastSighting;            // Last place this enemy spotted the player.
+    public float fieldOfViewAngle = 80f;           // Number of degrees, centred on forward, for the enemy see.
+    public bool objectInSight;                      // Whether or not an object is currently sighted.
 
 
-    private UnityEngine.AI.NavMeshAgent nav;                       // Reference to the NavMeshAgent component.
+    private UnityEngine.AI.NavMeshAgent nav;        // Reference to the NavMeshAgent component.
     private SphereCollider col;                     // Reference to the sphere collider trigger component.
     private Animator anim;                          // Reference to the Animator.
-    private LastPlayerSighting lastPlayerSighting;  // Reference to last global sighting of the player.
-    private GameObject player;                      // Reference to the player.
-    private Animator playerAnim;                    // Reference to the player's animator component.
-    private PlayerHealth playerHealth;              // Reference to the player's health script.
-    private HashIDs hash;                           // Reference to the HashIDs.
-    private Vector3 previousSighting;               // Where the player was sighted last frame.
+    private GameObject shame;                       // Reference to the player.
 
 
     void Awake()
@@ -26,81 +20,62 @@ public class ShameRays : MonoBehaviour
         nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
         col = GetComponent<SphereCollider>();
         anim = GetComponent<Animator>();
-        lastPlayerSighting = GameObject.FindGameObjectWithTag(Tags.gameController).GetComponent<LastPlayerSighting>();
-        player = GameObject.FindGameObjectWithTag(Tags.player);
-        playerAnim = player.GetComponent<Animator>();
-        playerHealth = player.GetComponent<PlayerHealth>();
-        hash = GameObject.FindGameObjectWithTag(Tags.gameController).GetComponent<HashIDs>();
-
-        // Set the personal sighting and the previous sighting to the reset position.
-        personalLastSighting = lastPlayerSighting.resetPosition;
-        previousSighting = lastPlayerSighting.resetPosition;
+        shame = GameObject.FindGameObjectWithTag("Shames");
     }
 
 
     void Update()
     {
-        // If the last global sighting of the player has changed...
-        if (lastPlayerSighting.position != previousSighting)
-            // ... then update the personal sighting to be the same as the global sighting.
-            personalLastSighting = lastPlayerSighting.position;
-
-        // Set the previous sighting to the be the sighting from this frame.
-        previousSighting = lastPlayerSighting.position;
-
-        // If the player is alive...
-        if (playerHealth.health > 0f)
-            // ... set the animator parameter to whether the player is in sight or not.
-            anim.SetBool(hash.playerInSightBool, playerInSight);
-        else
-            // ... set the animator parameter to false.
-            anim.SetBool(hash.playerInSightBool, false);
+        if (objectInSight == false)
+        {
+            shame.GetComponent<Renderer>().material.color = Color.green;
+        }
     }
 
 
     void OnTriggerStay(Collider other)
     {
+
+        Debug.Log("ontrigger");
         // If the player has entered the trigger sphere...
-        if (other.gameObject == player)
+        if (other.gameObject == shame)
         {
             // By default the player is not in sight.
-            playerInSight = false;
+            objectInSight = false;
 
             // Create a vector from the enemy to the player and store the angle between it and forward.
             Vector3 direction = other.transform.position - transform.position;
             float angle = Vector3.Angle(direction, transform.forward);
 
+            //Debug.Log("Triggered but not found");
+
             // If the angle between forward and where the player is, is less than half the angle of view...
-            if (angle < fieldOfViewAngle * 0.5f)
+            if (angle < fieldOfViewAngle)
             {
                 RaycastHit hit;
 
-                // ... and if a raycast towards the player hits something...
-                if (Physics.Raycast(transform.position + transform.up, direction.normalized, out hit, col.radius))
-                {
-                    // ... and if the raycast hits the player...
-                    if (hit.collider.gameObject == player)
-                    {
-                        // ... the player is in sight.
-                        playerInSight = true;
+                Debug.Log("Within angle");
 
-                        // Set the last global sighting is the players current position.
-                        lastPlayerSighting.position = player.transform.position;
+                // ... and if a raycast towards the player hits something...
+                bool isHit = Physics.Raycast(transform.position, (shame.transform.position - this.transform.position), out hit);
+                Debug.DrawRay(this.transform.position, (shame.transform.position - this.transform.position));
+
+                if (Physics.Raycast(transform.position, (shame.transform.position - this.transform.position), out hit))
+                {
+                    Debug.Log("Ray shooty tooty");
+                    // ... and if the raycast hits the player...
+                    if (hit.collider.gameObject == shame)
+                    {
+                        Debug.Log("Ray hitting");
+                        // ... the player is in sight.
+                        objectInSight = true;
+                        // TODO: Create detection shader
+                        shame.GetComponent<Renderer>().material.color = Color.red;
                     }
                 }
-            }
-
-            // Store the name hashes of the current states.
-            int playerLayerZeroStateHash = playerAnim.GetCurrentAnimatorStateInfo(0).nameHash;
-            int playerLayerOneStateHash = playerAnim.GetCurrentAnimatorStateInfo(1).nameHash;
-
-            // If the player is running or is attracting attention...
-            if (playerLayerZeroStateHash == hash.locomotionState || playerLayerOneStateHash == hash.shoutState)
+            } else
             {
-                // ... and if the player is within hearing range...
-                if (CalculatePathLength(player.transform.position) <= col.radius)
-                    // ... set the last personal sighting of the player to the player's current position.
-                    personalLastSighting = player.transform.position;
+                //Debug.Log("Not Within angle");
             }
         }
     }
@@ -109,9 +84,9 @@ public class ShameRays : MonoBehaviour
     void OnTriggerExit(Collider other)
     {
         // If the player leaves the trigger zone...
-        if (other.gameObject == player)
+        if (other.gameObject == shame)
             // ... the player is not in sight.
-            playerInSight = false;
+            objectInSight = false;
     }
 
 
