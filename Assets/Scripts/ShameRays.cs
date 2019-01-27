@@ -5,14 +5,16 @@ using UnityEngine;
 public class ShameRays : MonoBehaviour
 {
     public float fieldOfViewAngle = 80f;           // Number of degrees, centred on forward, for the enemy see.
-    public bool objectInSight;                      // Whether or not an object is currently sighted.
 
     private float size = 0.3f;
     private UnityEngine.AI.NavMeshAgent nav;        // Reference to the NavMeshAgent component.
     private SphereCollider col;                     // Reference to the sphere collider trigger component.
     private Animator anim;                          // Reference to the Animator.
-    private GameObject[] shames;                       // Reference to the shames.
 
+    private GameObject[] shames;                       // Reference to the shames.
+    public bool objectInSight;                      // Whether or not an object is currently sighted.
+
+    private List<Vector3[]> shameVertices;
 
     void Awake()
     {
@@ -21,7 +23,13 @@ public class ShameRays : MonoBehaviour
         col = GetComponent<SphereCollider>();
         anim = GetComponent<Animator>();
         shames = GameObject.FindGameObjectsWithTag("Shames");
-
+        shameVertices = new List<Vector3[]>();
+        foreach (var shame in shames)
+        {
+            shameVertices.Add(shame.GetComponent<MeshFilter>().mesh.vertices);
+            Debug.Log("shame vertices size: " + shameVertices.Count);
+        }
+        
     }
 
 
@@ -33,13 +41,14 @@ public class ShameRays : MonoBehaviour
     void OnTriggerStay(Collider other)
     {
         // If the player has entered the trigger sphere...
-        foreach (GameObject shameinst in shames)
+        for (int i = 0; i < shames.Length; i++)
         {
-            if (other.gameObject == shameinst)
+            if (other.gameObject == shames[i])
             {
+                Debug.Log(shames[i].name);
                 // By default the player is not in sight.
                 objectInSight = false;
-                shameinst.GetComponent<Renderer>().material.color = Color.green;
+                shames[i].GetComponent<Renderer>().material.color = Color.green;
 
                 // Create a vector from the enemy to the player and store the angle between it and forward.
                 Vector3 direction = other.transform.position - transform.position;
@@ -52,29 +61,30 @@ public class ShameRays : MonoBehaviour
                 {
                     RaycastHit hit;
 
-                    //Debug.Log("Within angle");
+                    // get random vertice on the mesh
+                    Vector3 target = shames[i].transform.TransformPoint(shameVertices[i][Random.Range(0, shameVertices[i].Length - 1)]);
 
                     // ... and if a raycast towards the player hits something...
-                    bool isHit = Physics.Raycast(transform.position, (shameinst.transform.position + (Random.insideUnitSphere * size) - this.transform.position), out hit, 40f);
-                    Debug.DrawRay(this.transform.position, (shameinst.transform.position + (Random.insideUnitSphere * size) - this.transform.position));
+                    bool isHit = Physics.Raycast(transform.position, (target - this.transform.position), out hit, 40f);
+                    Debug.DrawRay(this.transform.position, (target - this.transform.position));
 
                     if (isHit)
                     {
                         //Debug.Log("Ray shooty tooty");
                         // ... and if the raycast hits the player...
-                        if (hit.collider.gameObject == shameinst)
+                        if (hit.collider.gameObject == shames[i])
                         {
                             //Debug.Log("Ray hitting");
                             // ... the player is in sight.
                             objectInSight = true;
                             // TODO: Create detection shader
-                            shameinst.GetComponent<Renderer>().material.color = Color.red;
+                            shames[i].GetComponent<Renderer>().material.color = Color.red;
                         }
                     }
                 }
                 else
                 {
-                    shameinst.GetComponent<Renderer>().material.color = Color.green;
+                    shames[i].GetComponent<Renderer>().material.color = Color.green;
                 }
             }
         }
