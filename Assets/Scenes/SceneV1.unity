@@ -5957,7 +5957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &381844556
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11149,6 +11149,8 @@ MonoBehaviour:
   layer2: {fileID: 674066495}
   gameOverCanvas: {fileID: 326129910}
   scoreCanvas: {fileID: 381844559}
+  gameOverText: {fileID: 181617487}
+  shameinfo: {fileID: 1496364388}
   numberOfMoves: 3
   turnSpeed: 1
   walkSpeed: 1
@@ -11565,7 +11567,7 @@ Light:
   m_SpotAngle: 80
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 1
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -16830,7 +16832,7 @@ Light:
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2.03
+  m_Intensity: 1.1
   m_Range: 9.378134
   m_SpotAngle: 30
   m_CookieSize: 10

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.AI;
 
 public class WalkOfShame : MonoBehaviour
@@ -18,6 +19,9 @@ public class WalkOfShame : MonoBehaviour
 
     public Canvas gameOverCanvas;
     public Canvas scoreCanvas;
+    public Text gameOverText;
+
+    public ShameRays shameinfo;
 
     public int numberOfMoves = 7;
     public float turnSpeed = 4f;
@@ -31,6 +35,7 @@ public class WalkOfShame : MonoBehaviour
     float layer2volume = 0.0f;
     bool walkedBackToEntrance = false;
     bool footstepplaying = false;
+
     
     private void Start()
     {
@@ -140,6 +145,15 @@ public class WalkOfShame : MonoBehaviour
 
     void TriggerGameOver()
     {
+
+        if (shameinfo.getShameScore() > 3000)
+        {
+            gameOverText.text = "SHAME ON YOU\r\n You dissapoint your mother.";
+        }
+         else
+        {
+            gameOverText.text = "You have escaped from your mother's wrath. (She loves you!)";
+        }
         gameOverCanvas.gameObject.SetActive(true);
     }
 

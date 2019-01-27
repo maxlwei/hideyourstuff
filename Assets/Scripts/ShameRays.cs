@@ -152,4 +152,9 @@ public class ShameRays : MonoBehaviour
     {
         audio.volume = shameScore < 2000 ? (shameScore / 2000f) : 1f;
     }
+
+    public int getShameScore()
+    {
+        return shameScore;
+    }
 }
