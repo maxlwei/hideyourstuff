@@ -63,6 +63,7 @@ public class WalkOfShame : MonoBehaviour
         }
     }
 
+    // Exit and entrance
     void FinalWalk()
     {
         if (walkedBackToEntrance == false)
@@ -84,16 +85,20 @@ public class WalkOfShame : MonoBehaviour
             Collider target = targetWayPoint.GetComponent<Collider>();
             if (collider == target)
             {
-                if (walkedBackToEntrance)
+                
+                if ((numberOfMoves < 1) && target.gameObject.name == "Exit Waypoint")
                 {
                     TriggerGameOver();
+                    return;
                 }
                 if (numberOfMoves < 1)
                 {
                     walkedBackToEntrance = true;
+                } else
+                {
+                    SetNewWaypoint();
                 }
                 ResetTimer();
-                SetNewWaypoint();
                 numberOfMoves--;
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShameRays : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class ShameRays : MonoBehaviour
     public bool objectInSight;                      // Whether or not an object is currently sighted.
 
     private List<Vector3[]> shameVertices;
+
+    public Text scoreText;
+    private int shameScore = 0;
 
     void Awake()
     {
@@ -35,6 +39,7 @@ public class ShameRays : MonoBehaviour
 
     void Update()
     {
+        scoreText.text = "JUDGEMENT: " + shameScore.ToString();
     }
 
 
@@ -45,7 +50,7 @@ public class ShameRays : MonoBehaviour
         {
             if (other.gameObject == shames[i])
             {
-                Debug.Log(shames[i].name);
+                //Debug.Log(shames[i].name);
                 // By default the player is not in sight.
                 objectInSight = false;
                 shames[i].GetComponent<Renderer>().material.color = Color.green;
@@ -79,6 +84,7 @@ public class ShameRays : MonoBehaviour
                             objectInSight = true;
                             // TODO: Create detection shader
                             shames[i].GetComponent<Renderer>().material.color = Color.red;
+                            shameScore += 1;
                         }
                     }
                 }
