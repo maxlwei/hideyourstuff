@@ -12,6 +12,9 @@ public class WalkOfShame : MonoBehaviour
     public GameObject entranceWayPoint;
     public GameObject exitWayPoint;
     GameObject targetWayPoint;
+    public AudioSource footsteps;
+    public AudioSource layer1;
+    public AudioSource layer2;
 
     public Canvas gameOverCanvas;
     public Canvas scoreCanvas;
@@ -24,7 +27,10 @@ public class WalkOfShame : MonoBehaviour
     public float waitDelay = 2;
     float waitTimer;
 
+    float layer1volume = 0.0f;
+    float layer2volume = 0.0f;
     bool walkedBackToEntrance = false;
+    bool footstepplaying = false;
     
     private void Start()
     {
@@ -45,6 +51,7 @@ public class WalkOfShame : MonoBehaviour
             delayBeforeStart -= Time.deltaTime;
         } else
         {
+            fadeInLayer1(layer1);
             scoreCanvas.gameObject.SetActive(true);
             if (numberOfMoves > 0)
             {
@@ -60,8 +67,18 @@ public class WalkOfShame : MonoBehaviour
     {
         if (waitTimer < 0)
         {
+            fadeInLayer2(layer2);
+            if (!footstepplaying)
+            {
+                footsteps.Play();
+                footstepplaying = true;
+            }
             transform.forward = Vector3.RotateTowards(transform.forward, targetWayPoint.transform.position - transform.position, turnSpeed * Time.deltaTime, 0.0f);
             transform.position = Vector3.MoveTowards(transform.position, targetWayPoint.transform.position, walkSpeed * Time.deltaTime);
+        } else
+        {
+            footsteps.Pause();
+            footstepplaying = false;
         }
     }
 
@@ -125,4 +142,23 @@ public class WalkOfShame : MonoBehaviour
     {
         gameOverCanvas.gameObject.SetActive(true);
     }
+
+    void fadeInLayer1(AudioSource source)
+    {
+        if (source.volume < 1)
+        {
+            layer1volume += 0.1f * Time.deltaTime;
+            source.volume = layer1volume;
+        }
+    }
+
+    void fadeInLayer2(AudioSource source)
+    {
+        if (source.volume < 1)
+        {
+            layer2volume += 0.1f * Time.deltaTime;
+            source.volume = layer2volume;
+        }
+    }
+
 }

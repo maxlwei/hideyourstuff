@@ -16,6 +16,7 @@ public class ShameRays : MonoBehaviour
     public bool objectInSight;                      // Whether or not an object is currently sighted.
 
     private List<Vector3[]> shameVertices;
+    public AudioSource layer3;
 
     public Text scoreText;
     private int shameScore = 0;
@@ -40,6 +41,7 @@ public class ShameRays : MonoBehaviour
     void Update()
     {
         scoreText.text = "JUDGEMENT: " + shameScore.ToString();
+        UpdateShameAudio(layer3);
     }
 
 
@@ -144,5 +146,10 @@ public class ShameRays : MonoBehaviour
         }
 
         return pathLength;
+    }
+
+    void UpdateShameAudio(AudioSource audio)
+    {
+        audio.volume = shameScore < 2000 ? (shameScore / 2000f) : 1f;
     }
 }
