@@ -14,6 +14,7 @@ public class WalkOfShame : MonoBehaviour
     GameObject targetWayPoint;
 
     public Canvas gameOverCanvas;
+    public Canvas scoreCanvas;
 
     public int numberOfMoves = 7;
     public float turnSpeed = 4f;
@@ -44,6 +45,7 @@ public class WalkOfShame : MonoBehaviour
             delayBeforeStart -= Time.deltaTime;
         } else
         {
+            scoreCanvas.gameObject.SetActive(true);
             if (numberOfMoves > 0)
             {
                 Walk();
@@ -85,14 +87,13 @@ public class WalkOfShame : MonoBehaviour
             Collider target = targetWayPoint.GetComponent<Collider>();
             if (collider == target)
             {
-                
-                if ((numberOfMoves < 1) && target.gameObject.name == "Exit Waypoint")
-                {
-                    TriggerGameOver();
-                    return;
-                }
                 if (numberOfMoves < 1)
                 {
+                    if (target.gameObject.name == "Exit Waypoint")
+                    {
+                        TriggerGameOver();
+                        return;
+                    }
                     walkedBackToEntrance = true;
                 } else
                 {
