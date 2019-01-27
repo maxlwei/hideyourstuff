@@ -11,9 +11,7 @@ public class ShameRays : MonoBehaviour
     private UnityEngine.AI.NavMeshAgent nav;        // Reference to the NavMeshAgent component.
     private SphereCollider col;                     // Reference to the sphere collider trigger component.
     private Animator anim;                          // Reference to the Animator.
-    private GameObject shame;                       // Reference to the player.
-    private Mesh shameMesh;
-    private Vector3[] shameVertices;
+    private GameObject[] shames;                       // Reference to the shames.
 
 
     void Awake()
@@ -22,68 +20,62 @@ public class ShameRays : MonoBehaviour
         nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
         col = GetComponent<SphereCollider>();
         anim = GetComponent<Animator>();
-        shame = GameObject.FindGameObjectWithTag("Shames");
-        shameMesh = shame.GetComponent<MeshFilter>().mesh;
-        shameVertices = shameMesh.vertices;
+        shames = GameObject.FindGameObjectsWithTag("Shames");
+
     }
 
 
     void Update()
     {
-        if (objectInSight == false)
-        {
-            shame.GetComponent<Renderer>().material.color = Color.green;
-        }
     }
 
 
     void OnTriggerStay(Collider other)
     {
-
-        Debug.Log("ontrigger");
         // If the player has entered the trigger sphere...
-        if (other.gameObject == shame)
+        foreach (GameObject shameinst in shames)
         {
-            // By default the player is not in sight.
-            objectInSight = false;
-
-            // Create a vector from the enemy to the player and store the angle between it and forward.
-            Vector3 direction = other.transform.position - transform.position;
-            float angle = Vector3.Angle(direction, transform.forward);
-
-            //Debug.Log("Triggered but not found");
-
-            // If the angle between forward and where the player is, is less than half the angle of view...
-            if (angle < fieldOfViewAngle / 2f)
+            if (other.gameObject == shameinst)
             {
-                RaycastHit hit;
+                // By default the player is not in sight.
+                objectInSight = false;
+                shameinst.GetComponent<Renderer>().material.color = Color.green;
 
-                Debug.Log("Within angle");
-                // get random vertice on mesh
-                Vector3 target = shame.transform.TransformPoint(shameVertices[Random.Range(0, shameVertices.Length - 1)]);
-                //Vector3 target = shameVertices[Random.Range(0, shameVertices.Length - 1)];
+                // Create a vector from the enemy to the player and store the angle between it and forward.
+                Vector3 direction = other.transform.position - transform.position;
+                float angle = Vector3.Angle(direction, transform.forward);
 
+                //Debug.Log("Triggered but not found");
 
-                // ... and if a raycast towards the player hits something...
-                bool isHit = Physics.Raycast(transform.position, (target - this.transform.position), out hit, 40f);
-                Debug.DrawRay(this.transform.position, (target - this.transform.position));
-
-                if (isHit)
+                // If the angle between forward and where the player is, is less than half the angle of view...
+                if (angle < fieldOfViewAngle / 2f)
                 {
-                    Debug.Log("Ray shooty tooty");
-                    // ... and if the raycast hits the player...
-                    if (hit.collider.gameObject == shame)
+                    RaycastHit hit;
+
+                    //Debug.Log("Within angle");
+
+                    // ... and if a raycast towards the player hits something...
+                    bool isHit = Physics.Raycast(transform.position, (shameinst.transform.position + (Random.insideUnitSphere * size) - this.transform.position), out hit, 40f);
+                    Debug.DrawRay(this.transform.position, (shameinst.transform.position + (Random.insideUnitSphere * size) - this.transform.position));
+
+                    if (isHit)
                     {
-                        Debug.Log("Ray hitting");
-                        // ... the player is in sight.
-                        objectInSight = true;
-                        // TODO: Create detection shader
-                        shame.GetComponent<Renderer>().material.color = Color.red;
+                        //Debug.Log("Ray shooty tooty");
+                        // ... and if the raycast hits the player...
+                        if (hit.collider.gameObject == shameinst)
+                        {
+                            //Debug.Log("Ray hitting");
+                            // ... the player is in sight.
+                            objectInSight = true;
+                            // TODO: Create detection shader
+                            shameinst.GetComponent<Renderer>().material.color = Color.red;
+                        }
                     }
                 }
-            } else
-            {
-                //Debug.Log("Not Within angle");
+                else
+                {
+                    shameinst.GetComponent<Renderer>().material.color = Color.green;
+                }
             }
         }
     }
@@ -91,10 +83,16 @@ public class ShameRays : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        // If the player leaves the trigger zone...
-        if (other.gameObject == shame)
-            // ... the player is not in sight.
-            objectInSight = false;
+        foreach (GameObject shameinst in shames)
+        {
+            // If the player leaves the trigger zone...
+            if (other.gameObject == shameinst)
+            {
+                // ... the player is not in sight.
+                objectInSight = false;
+                shameinst.GetComponent<Renderer>().material.color = Color.green;
+            }
+        }
     }
 
 
