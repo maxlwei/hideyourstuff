@@ -152,7 +152,7 @@ public class WalkOfShame : MonoBehaviour
         }
          else
         {
-            gameOverText.text = "You have escaped from your mother's wrath. (She loves you!)";
+            gameOverText.text = "You have escaped your mother's wrath. (She loves you!)";
         }
         gameOverCanvas.gameObject.SetActive(true);
     }

@@ -55,7 +55,7 @@ public class ShameRays : MonoBehaviour
                 //Debug.Log(shames[i].name);
                 // By default the player is not in sight.
                 objectInSight = false;
-                shames[i].GetComponent<Renderer>().material.color = Color.green;
+                //shames[i].GetComponent<Renderer>().material.color = Color.green;
 
                 // Create a vector from the enemy to the player and store the angle between it and forward.
                 Vector3 direction = other.transform.position - transform.position;
@@ -85,14 +85,14 @@ public class ShameRays : MonoBehaviour
                             // ... the player is in sight.
                             objectInSight = true;
                             // TODO: Create detection shader
-                            shames[i].GetComponent<Renderer>().material.color = Color.red;
+                            //shames[i].GetComponent<Renderer>().material.color = Color.red;
                             shameScore += 1;
                         }
                     }
                 }
                 else
                 {
-                    shames[i].GetComponent<Renderer>().material.color = Color.green;
+                    //[i].GetComponent<Renderer>().material.color = Color.green;
                 }
             }
         }
@@ -108,7 +108,7 @@ public class ShameRays : MonoBehaviour
             {
                 // ... the player is not in sight.
                 objectInSight = false;
-                shameinst.GetComponent<Renderer>().material.color = Color.green;
+                //shameinst.GetComponent<Renderer>().material.color = Color.green;
             }
         }
     }
